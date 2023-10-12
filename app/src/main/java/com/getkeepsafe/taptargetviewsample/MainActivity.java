@@ -1,6 +1,7 @@
 package com.getkeepsafe.taptargetviewsample;
 
 import android.content.DialogInterface;
+import android.graphics.Color;
 import android.graphics.Rect;
 import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
@@ -48,9 +49,15 @@ public class MainActivity extends AppCompatActivity {
     final TapTargetSequence sequence = new TapTargetSequence(this)
         .targets(
             // This tap target will target the back button, we just need to pass its containing toolbar
-            TapTarget.forToolbarNavigationIcon(toolbar, "This is the back button", sassyDesc).id(1),
+            TapTarget.forToolbarNavigationIcon(toolbar, "This is the back button", sassyDesc, "GOT IT")
+                    .skipTextVisible(true)
+                    .skipTextColor(android.R.color.black)
+                    .skipTextSize(16)
+                    .skipTextAlpha(1f)
+                    .cancelable(false)
+                    .id(1),
             // Likewise, this tap target will target the search button
-            TapTarget.forToolbarMenuItem(toolbar, R.id.search, "This is a search icon", "As you can see, it has gotten pretty dark around here...")
+            TapTarget.forToolbarMenuItem(toolbar, R.id.search, "This is a search icon", "As you can see, it has gotten pretty dark around here...", "GOT IT")
                 .dimColor(android.R.color.black)
                 .outerCircleColor(R.color.colorAccent)
                 .targetCircleColor(android.R.color.black)
@@ -58,10 +65,11 @@ public class MainActivity extends AppCompatActivity {
                 .textColor(android.R.color.black)
                 .id(2),
             // You can also target the overflow button in your toolbar
-            TapTarget.forToolbarOverflow(toolbar, "This will show more options", "But they're not useful :(").id(3),
+            TapTarget.forToolbarOverflow(toolbar, "This will show more options", "But they're not useful :(", "GOT IT").skipTextVisible(true).id(3),
             // This tap target will target our droid buddy at the given target rect
-            TapTarget.forBounds(droidTarget, "Oh look!", "You can point to any part of the screen. You also can't cancel this one!")
+            TapTarget.forBounds(droidTarget, "Oh look!", "You can point to any part of the screen. You also can't cancel this one!","GOT IT")
                 .cancelable(false)
+                    .skipTextVisible(true)
                 .icon(droid)
                 .id(4)
         )
@@ -85,7 +93,7 @@ public class MainActivity extends AppCompatActivity {
                 .setMessage("You canceled the sequence")
                 .setPositiveButton("Oops", null).show();
             TapTargetView.showFor(dialog,
-                TapTarget.forView(dialog.getButton(DialogInterface.BUTTON_POSITIVE), "Uh oh!", "You canceled the sequence at step " + lastTarget.id())
+                TapTarget.forView(dialog.getButton(DialogInterface.BUTTON_POSITIVE), "Uh oh!", "You canceled the sequence at step " + lastTarget.id(),"GOT IT")
                     .cancelable(false)
                     .tintTarget(false), new TapTargetView.Listener() {
                   @Override
@@ -100,8 +108,11 @@ public class MainActivity extends AppCompatActivity {
     // You don't always need a sequence, and for that there's a single time tap target
     final SpannableString spannedDesc = new SpannableString("This is the sample app for TapTargetView");
     spannedDesc.setSpan(new UnderlineSpan(), spannedDesc.length() - "TapTargetView".length(), spannedDesc.length(), 0);
-    TapTargetView.showFor(this, TapTarget.forView(findViewById(R.id.fab), "Hello, world!", spannedDesc)
+    TapTargetView.showFor(this, TapTarget.forView(findViewById(R.id.fab), "Hello, world!", spannedDesc,"GOT IT")
         .cancelable(false)
+                    .skipTextVisible(true)
+                    .skipTextColor(android.R.color.holo_green_light)
+                    .skipTextBackgroundColor(ContextCompat.getColor(findViewById(R.id.fab).getContext(), android.R.color.holo_red_light))
         .drawShadow(true)
         .titleTextDimen(R.dimen.title_text_size)
         .tintTarget(false), new TapTargetView.Listener() {
@@ -121,6 +132,12 @@ public class MainActivity extends AppCompatActivity {
       @Override
       public void onTargetDismissed(TapTargetView view, boolean userInitiated) {
         Log.d("TapTargetViewSample", "You dismissed me :(");
+      }
+
+      @Override
+      public void onSkipTextClick(TapTargetView view) {
+        super.onOuterCircleClick(view);
+        Toast.makeText(view.getContext(), "You skip me!", Toast.LENGTH_SHORT).show();
       }
     });
   }
