@@ -39,7 +39,7 @@ publishing {
             groupId = 'com.github.wdikiz'
             artifactId = 'TapTargetView_SkipButton'
             version = '1.5'
-
+            artifact("$buildDir/outputs/aar/taptargetview-release.aar")
             afterEvaluate {
                 from components.findByName('release')            }
         }
