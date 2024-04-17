@@ -1,55 +1,47 @@
 apply plugin: 'com.android.library'
-apply plugin: 'com.vanniktech.maven.publish'
+apply plugin: 'maven-publish'
 
 android {
-    compileSdkVersion defCompileSdkVersion
-
+    namespace 'com.getkeepsafe.taptargetview.library'
+    compileSdk 34
     defaultConfig {
-        minSdkVersion defMinSdkVersion
-        targetSdkVersion defCompileSdkVersion
+        minSdkVersion 21
+        targetSdkVersion 34
     }
+    lintOptions {
+        abortOnError false
+    }
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+        debug {
+        }
+    }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_11
+        targetCompatibility JavaVersion.VERSION_11
+    }
+
 }
 
 dependencies {
-    api "androidx.annotation:annotation:$defAndroidAnnotationVersion"
-    api "androidx.appcompat:appcompat:$defAppCompatVersion"
-    implementation "androidx.core:core:$defAndroidXCoreVersion"
+    api "androidx.annotation:annotation:1.7.1"
+    api "androidx.appcompat:appcompat:1.6.1"
+    implementation "androidx.core:core:1.12.0"
+    implementation(platform("org.jetbrains.kotlin:kotlin-bom:1.9.10"))
 }
 
-// build a jar with source files
-task sourcesJar(type: Jar) {
-    from android.sourceSets.main.java.srcDirs
-    classifier = 'sources'
-}
+publishing {
+    publications {
+        release(MavenPublication) {
+            groupId = 'com.github.wdikiz'
+            artifactId = 'TapTargetView_SkipButton'
+            version = '1.5'
 
-task javadoc(type: Javadoc) {
-    failOnError  false
-    source = android.sourceSets.main.java.sourceFiles
-    classpath += project.files(android.getBootClasspath().join(File.pathSeparator))
-}
-
-// build a jar with javadoc
-task javadocJar(type: Jar, dependsOn: javadoc) {
-    classifier = 'javadoc'
-    from javadoc.destinationDir
-}
-
-artifacts {
-    archives sourcesJar
-    archives javadocJar
-}
-
-afterEvaluate{
-    android.libraryVariants.each {{variant ->
-    publishing.publications.create(variant.name, MavenPublication){
-        from components.findByName(variant.name)
-        groupID = "com.wdikiz"
-        arifactId = "TapTargetView_SkipButton"
-        version '1.1'
-
+            afterEvaluate {
+                from components.findByName('release')            }
+        }
     }
-    }
-    }
-
-
 }
